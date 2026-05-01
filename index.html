@@ -3,157 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Prompt Vault - Full Marketing Edition</title>
+    <title>AI 實戰指令庫 - 列表導覽版</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
-        :root {
-            /* 更舒服的閱讀基準：手機略小、桌機略大 */
-            --base-font-size: clamp(16px, 1.1vw + 12px, 18px);
-            --base-line-height: 1.7;
-        }
-
-        html {
-            font-size: var(--base-font-size);
-            -webkit-text-size-adjust: 100%;
-            text-rendering: optimizeLegibility;
-        }
-
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            font-size: 1rem;
-            line-height: var(--base-line-height);
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
+            background-color: #f8fafc; /* slate-50 */
+            color: #0f172a; /* slate-900 */
         }
 
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
+        /* 自訂捲動條，讓介面更像應用程式 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* 展開/收合動畫 */
+        .accordion-content {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s ease-in-out;
+        }
+        .accordion-content.open {
+            grid-template-rows: 1fr;
+        }
+        .accordion-inner {
+            overflow: hidden;
         }
 
-        .modal-animate {
-            animation: modalPop 0.25s ease-out forwards;
-        }
+        /* 詳細內容排版 */
+        .prose h4 { font-weight: 700; color: #1e293b; margin-top: 1rem; margin-bottom: 0.5rem; font-size: 0.95rem; }
+        .prose p { font-size: 0.875rem; color: #475569; line-height: 1.6; margin-bottom: 0.75rem; }
+        .prose ul, .prose ol { padding-left: 1.25rem; margin-bottom: 0.75rem; font-size: 0.875rem; color: #475569;}
+        .prose li { margin-bottom: 0.25rem; }
+        .prose code { background-color: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, monospace; color: #e11d48; font-size: 0.85em; }
 
-        @keyframes modalPop {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        body.lock-scroll {
-            position: fixed;
-            width: 100%;
-        }
-
-        /* 詳細內容樣式 */
-        .prose h4 { font-weight: 800; color: #1e293b; margin-top: 1.5rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.15rem; border-left: 4px solid #3b82f6; padding-left: 0.75rem; }
-        .prose p { font-size: 1rem; color: #475569; line-height: 1.75; margin-bottom: 0.9rem; }
-        .prose ul, .prose ol { padding-left: 1.25rem; margin-bottom: 1rem; }
-        .prose li { font-size: 1rem; color: #475569; margin-bottom: 0.5rem; }
-        .prose strong { color: #0f172a; font-weight: 700; }
-        .prose code { background-color: #f1f5f9; padding: 8px 10px; border-radius: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; color: #e11d48; font-size: 0.95em; display: block; margin: 0.75rem 0; white-space: pre-wrap; line-height: 1.6; }
-        
-        .sop-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem; }
-        .sop-table th { background: #f8fafc; text-align: left; padding: 8px; border: 1px solid #e2e8f0; font-weight: 700; }
-        .sop-table td { padding: 8px; border: 1px solid #e2e8f0; vertical-align: top; }
-
-        /* 彈窗左側指令內容：由 text-xs 拉回可讀尺寸 */
-        #modalContent {
-            font-size: 0.95rem;
-            line-height: 1.7;
-        }
-
-        /* 卡片懸停效果 */
-        .tool-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .tool-card:hover {
-            transform: translateY(-4px);
+        /* 代碼區塊樣式 */
+        .prompt-box {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+            white-space: pre-wrap;
+            line-height: 1.6;
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen">
+<body class="h-screen flex flex-col md:flex-row overflow-hidden">
 
-    <!-- Header -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 px-4 py-3 shadow-sm">
-        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div class="flex items-center gap-2">
-                <div class="bg-blue-600 p-1.5 rounded-lg shadow-md shadow-blue-100">
-                    <i data-lucide="zap" class="text-white w-4 h-4"></i>
+    <!-- 頂部/左側 導覽列 (Sidebar) -->
+    <aside class="w-full md:w-64 lg:w-72 bg-white border-b md:border-b-0 md:border-r border-slate-200 flex flex-col flex-shrink-0 z-20 shadow-sm md:shadow-none">
+        
+        <!-- Header 區 -->
+        <div class="p-4 md:p-5 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-slate-900 p-1.5 rounded text-white">
+                    <i data-lucide="terminal" class="w-5 h-5"></i>
                 </div>
-                <h1 class="text-lg font-black text-slate-800 tracking-tight">AI 實戰指令庫</h1>
+                <h1 class="font-bold text-slate-800 tracking-tight text-lg">AI 指令庫</h1>
             </div>
+            <!-- 手機版選單切換按鈕 -->
+            <button id="mobileMenuBtn" class="md:hidden p-2 text-slate-500 hover:bg-slate-100 rounded">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- 搜尋與分類區 (手機版預設隱藏) -->
+        <div id="sidebarContent" class="hidden md:flex flex-col flex-1 overflow-y-auto">
             
-            <div class="relative w-full sm:w-72">
-                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5"></i>
-                <input 
-                    type="text" 
-                    id="searchInput"
-                    placeholder="搜尋角色、技巧、Prompt..."
-                    class="w-full pl-9 pr-3 py-2.5 bg-slate-100 border-none rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all text-sm outline-none"
-                >
+            <!-- 搜尋框 -->
+            <div class="p-4 pb-2">
+                <div class="relative group">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 group-focus-within:text-blue-500 transition-colors"></i>
+                    <input 
+                        type="text" 
+                        id="searchInput"
+                        placeholder="搜尋指令、標籤..."
+                        class="w-full pl-9 pr-3 py-2 bg-slate-100 border border-transparent rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm outline-none"
+                    >
+                </div>
+            </div>
+
+            <!-- 分類選單 -->
+            <nav class="flex-1 p-2 space-y-0.5" id="categoryContainer">
+                <!-- 透過 JS 生成 -->
+            </nav>
+
+            <div class="p-4 border-t border-slate-100 text-xs text-slate-400 font-medium">
+                共 <span id="totalCount" class="text-slate-600 font-bold">0</span> 個實戰指令
             </div>
         </div>
-    </header>
+    </aside>
 
-    <main class="max-w-6xl mx-auto px-4 py-6">
-        <!-- 分類容器 -->
-        <div id="categoryContainer" class="flex flex-wrap gap-1.5 mb-6 overflow-x-auto pb-1 scrollbar-hide"></div>
+    <!-- 右側/主要 內容區 (Main Content) -->
+    <main class="flex-1 flex flex-col h-full bg-slate-50 relative">
+        
+        <!-- 當前分類標題列 -->
+        <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 p-4 sticky top-0 z-10">
+            <h2 id="currentCategoryTitle" class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                全部 <span id="currentCategoryCount" class="text-sm font-normal text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full"></span>
+            </h2>
+        </header>
 
-        <!-- 卡片網格 -->
-        <div id="toolGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-
-        <!-- 空狀態 -->
-        <div id="emptyState" class="hidden text-center py-20 opacity-30">
-            <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-3"></i>
-            <p class="text-sm">找不到符合內容</p>
+        <!-- 列表容器 -->
+        <div class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8" id="mainScrollArea">
+            <div id="toolList" class="max-w-4xl mx-auto space-y-4">
+                <!-- 卡片透過 JS 生成 -->
+            </div>
+            
+            <!-- 空狀態 -->
+            <div id="emptyState" class="hidden flex-col items-center justify-center py-32 opacity-40">
+                <i data-lucide="search-x" class="w-16 h-16 mb-4 text-slate-400"></i>
+                <p class="text-slate-600 font-medium">找不到符合的指令</p>
+            </div>
         </div>
     </main>
 
-    <!-- 彈窗內容 -->
-    <div id="modalOverlay" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-6 overflow-hidden">
-        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" onclick="closeModal()"></div>
-        <div class="relative bg-white w-full max-w-5xl h-full max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row modal-animate">
-            <!-- 左側：指令內容 -->
-            <div class="md:w-5/12 p-5 lg:p-8 border-b md:border-b-0 md:border-r border-slate-100 flex flex-col bg-slate-50/50 overflow-hidden">
-                <div class="mb-4 flex justify-between items-start">
-                    <div>
-                        <span class="text-[10px] font-black text-blue-600 bg-blue-100 px-2 py-0.5 rounded uppercase tracking-widest">Prompt Preview</span>
-                        <h2 id="modalTitle" class="text-lg lg:text-xl font-bold text-slate-900 mt-1"></h2>
-                    </div>
-                    <button onclick="closeModal()" class="md:hidden p-1.5 text-slate-400 bg-white rounded-full shadow-sm">
-                        <i data-lucide="x" class="w-5 h-5"></i>
-                    </button>
-                </div>
-                <div id="modalContent" class="flex-1 bg-white border border-slate-200 rounded-xl p-4 overflow-y-auto text-sm font-mono text-slate-700 shadow-inner whitespace-pre-wrap"></div>
-                <button id="copyBtn" class="mt-4 w-full py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 bg-slate-900 text-white hover:bg-blue-600 transition-all shadow-md active:scale-95 text-sm">
-                    <i data-lucide="copy" class="w-4 h-4"></i>
-                    <span>複製指令</span>
-                </button>
-            </div>
-            <!-- 右側：詳細指南 -->
-            <div class="md:w-7/12 p-5 lg:p-8 overflow-y-auto bg-white relative">
-                <button onclick="closeModal()" class="hidden md:block absolute top-5 right-5 p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-                <div class="mb-4">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                        <i data-lucide="info" class="w-3 h-3"></i> 實戰指引與心法
-                    </span>
-                </div>
-                <div id="modalDetails" class="prose max-w-none"></div>
-            </div>
-        </div>
+    <!-- 複製成功的 Toast 提示 -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-slate-800 text-white px-4 py-3 rounded-lg shadow-xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 z-50 pointer-events-none">
+        <i data-lucide="check-circle-2" class="w-5 h-5 text-green-400"></i>
+        <span class="text-sm font-medium">指令已複製到剪貼簿！</span>
     </div>
 
     <script>
+        // --- 資料庫 (整合您提供的所有資料) ---
         const INITIAL_DATA = [
-            // --- 通用指南 ---
+            // --- 網頁設計 ---
+            {
+                id: 31,
+                title: "HTML 動態網頁生成 (Bento Grid 風格)",
+                category: "網頁設計",
+                description: "根據上傳文件內容，產出具備現代感 Bento Grid 風格、Tesla 紅色高亮與 Apple 滾動特效的 HTML 網頁。",
+                content: "根據[上傳文件名稱]的內容，產生一個 HTML 動態網頁，網頁產生的要求是：\n1. 使用Bento Grid風格的視覺設計，純黑色底搭配特斯拉紅色#E31937作為高亮\n2. 強調超大字體或數字突出核心要點，畫面中有超大視覺元素強調重點，與小元素的比例形成反差\n3. 中英文混用，中文大字體粗體，英文小字當點綴\n4. 簡潔的勾線圖形化作為資料視覺化或配圖元素\n5. 運用高亮色自身透明度漸層製造科技感，但是不同高亮色不要互相漸變\n6. 模仿 apple 官網的動效，向下滾動滑鼠配合動效\n7. 資料可以引用線上的圖表組件，樣式需要跟主題一致\n8. 使用 Framer Motion （透過CDN引入）\n9. 使用HTML5、TailwindCSS 3.0+（透過CDN引入）和必要的JavaScript\n10. 使用專業圖示庫如Font Awesome或Material Icons（透過CDN引入）\n11. 避免使用emoji作為主要圖標\n12. 將版面以及grid尺寸利用畫面分隔，以簡報檔案格式1920*1080作為分割，每個分割頁面按照資訊分類放入對應資料，每一頁的主題相同且明顯\n13. 不要省略內容要點",
+                tags: ["網頁生成", "BentoGrid", "Tailwind", "FramerMotion"],
+                details: `
+                    <h4>使用技巧：</h4>
+                    <p>這是一個非常具體且專業的網頁生成 Prompt。建議先整理好文案內容（Markdown 或 txt 檔），然後使用 <code>@檔案名稱</code> 或直接附上文件，再貼上此段指令。</p>
+                    <p>指令中明確指定了技術棧（Tailwind, Framer Motion, CDN）與視覺規範（黑紅配、大字體），能有效降低 AI 產出老舊風格網頁的機率。</p>
+                `
+            },
+
+            // --- 課程產品頁面 ---
+            {
+                id: 20,
+                title: "建立初步架構（指令 A）",
+                category: "課程產品頁面",
+                description: "撰寫 Landing Page 文案初稿（含痛點發問、四大學習點、五大賣點等）。",
+                content: "請根據我提供的課程資訊與 User Story，撰寫一版完整的 Landing Page 文案初稿。請確保痛點能精準命中受眾。\n\n順序與架構:\n1.痛點發問：直擊受眾痛點，給出大家不知道的強烈知識點（如：台股有80%的人都在慘賠）\n2.這堂課讓你一次掌握...：羅列出四大學習點\n3.建立心理支持：主打新手也不怕的優勢\n4.課程五大賣點：按順序列出知識內容，使其充滿結構性，利於視覺化設計\n5.最適合誰：列出3~4種適合學習的人\n6.在這堂課你可以學到：再次重申交付軟硬知識\n7.售價資訊及報名區",
+                tags: ["LandingPage", "文案架構", "痛點分析"],
+                details: `
+                    <h4>產出說明：</h4>
+                    <p>此指令會要求 AI 嚴格依照 7 段式架構產出 Markdown 格式的文案，可直接交給網頁製作師或文案編輯。</p>
+                `
+            },
+            {
+                id: 21,
+                title: "品牌化與方法論包裝（指令 B）",
+                category: "課程產品頁面",
+                description: "將零散內容包裝成獨特的方法論名稱，建立系統感。",
+                content: "這堂課的內容比較零散，請幫我『無中生有』包裝一個獨特的方法論名稱（例如：XX步驟成功法、XX法則、XX框架、XX定位術），讓它看起來像一套完整的系統，並同步調整全頁文案。",
+                tags: ["品牌化", "方法論", "包裝"],
+                details: `
+                    <h4>使用時機：</h4>
+                    <p>在執行完「指令 A」後接續使用，讓課程看起來更具權威感與系統性。</p>
+                `
+            },
+            {
+                id: 22,
+                title: "視覺化文案精簡（指令 C）",
+                category: "課程產品頁面",
+                description: "將區塊文字縮減至 4 點以內，要求極簡、有力、去問號化。",
+                content: "我需要將『痛點』、『適合對象』做成視覺圖，請幫我將這幾區塊的文字縮減至 4 點以內，要求極簡、有力、去問號化，並保持專業感。",
+                tags: ["文案精簡", "視覺化", "BulletPoints"],
+                details: `
+                    <h4>目的：</h4>
+                    <p>為設計師準備作圖用的精簡文案，避免畫面上塞滿密密麻麻的文字。</p>
+                `
+            },
+            {
+                id: 23,
+                title: "生成 HTML 視覺示意圖（指令 D）",
+                category: "課程產品頁面",
+                description: "為方法論生成 Hero Section 或 SOP 的 HTML 示意圖，作為排版指南。",
+                content: "請參考這張圖片 [附上參考圖] 的風格，為我的『方法論』生成一個 Hero Section 或 課程 SOP 的 HTML 示意圖。背景要 [描述風格，如：深色專業感]。",
+                tags: ["HTML預覽", "排版指南", "HeroSection"],
+                details: `
+                    <h4>產出說明：</h4>
+                    <p>這不是最終網頁，而是給<strong>視覺設計師 (Designer)</strong> 的「排版指南」，展示文字與圖形如何結合以達到最佳視覺引導。</p>
+                `
+            },
+
+            // --- 通用指南 / 整理摘要 ---
             {
                 id: 1,
                 title: "Prompt 撰寫指南 (4原則與6訣竅)",
@@ -173,200 +215,302 @@
                         <li>善用現有文件 (@標記檔案)。</li>
                         <li>利用 Gemini 編輯提示：加上「請建議更有效的提示」。</li>
                     </ol>
-                    <h4>English Prompt:</h4>
-                    <code>You are a program manager in [industry]. Draft an executive summary email to [persona] based on [details about relevant program docs]. Limit to bullet points.</code>
+                `
+            },
+            {
+                id: 16,
+                title: "密度鏈 (Chain of Density) 摘要術",
+                category: "整理摘要",
+                description: "透過反覆迭代，逐步補充前一版缺少的細節，生成資訊密度極高且簡潔的文件摘要。",
+                content: "撰寫一個更緊湊的新摘要，補充先前摘要中缺少的相關資訊，文章長度要相同，避免冗長語句。",
+                tags: ["摘要整理", "密度鏈", "資訊壓縮", "進階"],
+                details: `
+                    <h4>操作流程 (胡安的例子)：</h4>
+                    <ol>
+                        <li><strong>基本摘要：</strong> 先請 AI「以不超過四句話提供第一季度銷售報告的簡明摘要，重點放在整體表現」。</li>
+                        <li><strong>紮實摘要：</strong> 使用此提示詞：「撰寫一個更緊湊的新摘要，補充缺失資訊，長度相同」。</li>
+                        <li><strong>重複：</strong> 重複第二個提示數次，直到摘要極度精簡且資訊豐富。</li>
+                    </ol>
+                    <h4>四大條件限制：</h4>
+                    <ul>
+                        <li><strong>摘要長度：</strong> 指定句數。</li>
+                        <li><strong>資訊深度：</strong> 從廣泛概述開始，逐漸加入具體細節。</li>
+                        <li><strong>準確性：</strong> 要求以原始報告為依據。</li>
+                        <li><strong>篇幅限制：</strong> 長篇文件可分段上傳處理。</li>
+                    </ul>
                 `
             },
 
             // --- 實例一：品牌經理 ---
             {
                 id: 2,
-                title: "品牌策略：定義品牌架構",
+                title: "定義品牌架構",
                 category: "品牌經理",
                 description: "訂定品牌訊息架構，納入使命、願景與受眾考量。",
                 content: "我是 [公司] 的品牌經理。請協助我為 [公司] 定義一套清楚且有效的品牌架構，並納入其多元的產品與服務組合作為考量。以下為我們目前的品牌組合概況：[列出所有既有品牌、產品與服務]。此外，這是我們的公司使命與願景：[簡要說明公司的使命與願景]；我們的目標受眾為：[描述目標受眾]；而我們期望的品牌定位是：[說明公司希望在市場上的形象與定位]。",
-                tags: ["品牌管理", "願景", "定位"],
+                tags: ["品牌策略", "定位", "願景"],
                 details: `
-                    <h4>操作指引：</h4>
-                    <p>用於重新整理公司的品牌架構和訊息架構時。建議先收集所有產品清單再開始。</p>
                     <h4>English Prompt:</h4>
                     <code>I am a brand manager at [company]. Help me define a clear and effective brand architecture for [company], considering its diverse products and service portfolio...</code>
                 `
             },
             {
                 id: 3,
-                title: "品牌經理：發想合作對象",
+                title: "發想品牌合作對象",
                 category: "品牌經理",
-                description: "尋找適合的影響者或互補品牌進行社群宣傳。",
+                description: "尋找適合的影響者 (KOL) 或互補品牌進行社群宣傳。",
                 content: "我是 [公司] 的品牌經理，正在籌劃一項聚焦於 [主題] 的全新行銷活動。請協助我找出適合合作的意見領袖類型與互補品牌，讓 [公司] 能在社群媒體上放大這波 [行銷活動] 的影響力。活動目標是觸及廣泛的 [目標受眾]，同時建立品牌可信度並提升互動率。",
-                tags: ["KOL", "跨界合作", "社群放大"],
+                tags: ["KOL", "異業結盟", "社群宣傳"],
                 details: `
-                    <h4>操作指引：</h4>
-                    <p>當您正在構思新的廣告活動時，此 Prompt 能幫助你突破同溫層，找到跨界合作的契機。</p>
                     <h4>English Prompt:</h4>
                     <code>I am a [brand manager] at [company] working to launch a new campaign focused on [topic]. Identify potential types of influencers and complementary brands...</code>
                 `
             },
             {
                 id: 4,
-                title: "品牌經理：市場調查與 A/B 測試",
+                title: "市場調查與 A/B 測試文案",
                 category: "品牌經理",
-                description: "分析產業趨勢並生成多版本文案進行測試。",
-                content: "我需要針對 [產業] 進行市場研究，以找出新興趨勢。請運用以下來源 [連結] 協助分析正在浮現的趨勢與消費者偏好變化。完成後，請針對新的訊息 [訊息內容] 產出三種不同版本的廣告文案變化。",
-                tags: ["趨勢分析", "AB測試", "文案發想"],
+                description: "分析產業新興趨勢，並生成多版本廣告文案進行測試。",
+                content: "我需要針對 [產業] 進行市場研究，以找出新興趨勢。請運用以下來源 [連結] 協助分析正在浮現的趨勢與消費者偏好變化。\n\n(完成研究後)\n我需要針對新的行銷訊息進行 A/B 測試。以下是我們的訊息內容：[訊息內容]。請產出三種不同版本的廣告文案變化。",
+                tags: ["趨勢分析", "AB測試", "市調"],
                 details: `
                     <h4>操作指引：</h4>
-                    <p>第一階段先找出趨勢，第二階段針對趨勢生成對應文案進行測試。</p>
-                    <h4>English Prompt:</h4>
-                    <code>I need to do market research on [industry] industry to identify new trends. Use [URLs] to uncover emerging trends...</code>
+                    <p>這是一個兩階段任務：先請 AI 根據給定連結分析趨勢，接著再根據新訊息產出三個變體的廣告文案供測試。</p>
                 `
             },
             {
                 id: 5,
-                title: "品牌經理：組織變革部落格",
+                title: "組織變革與人事異動公告",
                 category: "品牌經理",
-                description: "撰寫高層入職或變革的對外公告草稿。",
+                description: "撰寫高層入職或變革的對外網誌公告草稿。",
                 content: "請撰寫一篇部落格草稿，宣布 [姓名] 加入 [公司] 擔任 [職稱]。並請分享[兩到三項個人背景資訊，例如：前一任職單位及職位、參與的專業組織等。]",
                 tags: ["公關稿", "部落格", "人物專訪"],
                 details: `
-                    <h4>English Prompt:</h4>
-                    <code>Create a blog draft announcing that [name] is joining [company] as [position]. [Share two or three details from their bio...]</code>
+                    <h4>進階：建立專案追蹤表</h4>
+                    <p>草稿完成後，可請 AI 建立追蹤表：「請建立一份內容擴散的專案追蹤表，包含發布管道、負責人、URL 與優先順序欄位（低、中、高）。」</p>
                 `
             },
 
             // --- 實例二：行銷專員 ---
             {
                 id: 6,
-                title: "行銷專員：會議筆記轉追蹤表",
+                title: "會議筆記轉專案追蹤表",
                 category: "行銷專員",
-                description: "利用 Gemini 筆記自動產出專案追蹤試算表架構。",
-                content: "請根據 @[Meeting Notes from Gemini] 中的行動項目，產出一份專案追蹤表。包含發布管道、負責人、URL 與優先順序欄位（低、中、高）。",
-                tags: ["會議記錄", "專案管理", "效率"],
+                description: "利用 Gemini 會議筆記自動產出專案追蹤試算表架構。",
+                content: "請根據 @[Meeting Notes from Gemini] 中的行動項目，產出一份專案追蹤表。",
+                tags: ["專案管理", "效率", "會議紀錄"],
                 details: `
                     <h4>操作指引：</h4>
-                    <p>在 Google Meet 中選取「用 Gemini 做筆記」，會議結束後開啟試算表並使用 @ 標記該筆記檔案。</p>
+                    <p>在 Google Meet 中選取「用 Gemini 做筆記」。會議結束後開啟 Google 試算表，在側邊面板使用 <code>@檔案名稱</code> 標記該筆記，執行此指令。</p>
                 `
             },
             {
                 id: 7,
-                title: "行銷專員：社群趨勢研究",
+                title: "社群趨勢研究與問卷分析",
                 category: "行銷專員",
-                description: "研究熱門關鍵字、KOL 與內容主題趨勢，並分析調查報告洞察。",
-                content: "我是 [公司] 的 [行銷專員]，正在為 [即將上市的產品] 規劃上市策略。請協助我研究與 [主題] 相關的社群媒體趨勢。請具體說明目前的熱門關鍵字、具代表性的關鍵意見領袖，以及熱門內容中常見的主題趨勢。",
-                tags: ["GTM策略", "關鍵字", "社群監測"],
+                description: "研究熱門關鍵字、KOL 趨勢，並分析上傳的調查報告以定位行銷素材。",
+                content: "我是 [公司] 的 [行銷專員]，正在為 [即將上市的產品] 規劃上市策略。請協助我研究與 [主題] 相關的社群媒體趨勢。請具體說明目前的熱門關鍵字、具代表性的關鍵意見領袖，以及熱門內容中常見的主題趨勢。\n\n(後續分析報告)\n請分析這份［報告］中的研究結果。我特別關注任何與［主題］相關、且你認為特別突出的共通趨勢，這些洞察將有助於我更有效地為［產品］、面向［目標受眾］進行［行銷素材］的定位。",
+                tags: ["GTM", "社群趨勢", "報告分析"],
                 details: `
-                    <h4>步驟一：趨勢研究</h4>
-                    <p>先研究社群趨勢，找出熱門關鍵字、KOL 與內容主題，為 GTM 策略奠定基礎。</p>
-                    <h4>步驟二：上傳調查報告並分析</h4>
-                    <code>請分析這份 [報告] 中的研究結果。我特別關注與 [主題] 相關、且突出的共通趨勢，這些洞察將有助於我為 [產品] 面向 [目標受眾] 定位 [行銷素材]。</code>
-                    <h4>小技巧：</h4>
-                    <p>可搭配 <strong>@標記</strong> 上傳已有的調查報告，讓 AI 直接引用數據進行分析，效率更高。</p>
-                    <h4>English Prompt:</h4>
-                    <code>I am a [marketing specialist] at [company]. Help me research social media trends around [topics]. Be specific about trending keywords, representative KOLs, and common themes in popular content...</code>
+                    <h4>操作指引：</h4>
+                    <p>先進行大環境趨勢研究，再上傳自家問卷報告請 AI 分析，將洞察應用於即將上市的產品定位。</p>
                 `
             },
             {
                 id: 8,
-                title: "行銷專員：受眾畫像打造",
+                title: "建立深入的目標受眾畫像",
                 category: "行銷專員",
-                description: "建立目標受眾的人口統計、心理特徵與關鍵痛點。",
-                content: "我是 [公司] 專注於 [領域] 的行銷專員，我需要進行深入的受眾研究。請幫我建立一個[目標受眾]的完整畫像，包括核心人口統計特徵和心理特徵、他們常用的線上平台、[產品]可以解決的關鍵痛點，以及能夠引起他們共鳴的語言和訊息。",
-                tags: ["用戶畫像", "Persona", "需求分析"],
+                description: "建立目標受眾的人口統計、心理特徵、常用平台與關鍵痛點。",
+                content: "我是 [公司] 專注於 [領域] 的行銷專員，我需要進行深入的受眾研究，以便為 [用戶畫像] 開發出有說服力的行銷資料。首先，請幫我建立一個[目標受眾]的完整畫像，包括核心人口統計特徵和心理特徵、他們常用的線上平台、[產品]可以解決的關鍵痛點，以及能夠引起他們共鳴的語言和訊息。",
+                tags: ["Persona", "受眾分析", "痛點"],
                 details: `
                     <h4>English Prompt:</h4>
-                    <code>To start, help me generate a comprehensive profile of [target audience]. Include core demographics and psychographics...</code>
+                    <code>To start, help me generate a comprehensive profile of [target audience]. Include core demographics and psychographics, online platforms they frequent, key pain points [product] could solve, and language and messaging that resonates with them.</code>
                 `
             },
 
             // --- 實例三：數位行銷經理 ---
             {
                 id: 9,
-                title: "數位行銷：SEM 關鍵字與文案",
+                title: "SEM 關鍵字延伸與文案生成",
                 category: "數位行銷",
-                description: "延伸關鍵字清單並生成多種語氣的廣告文案，支援三步驟優化流程。",
-                content: "我是 [公司] 的數位行銷經理，正在為 [產品] 規劃 SEM 廣告。目前關鍵字：[列出]。請協助延伸長尾關鍵字。完成後，請以這些關鍵字為靈感產出多組廣告文案，包含標題、描述和行動號召，並針對 [目標族群] 使用 [語氣] 語氣。",
-                tags: ["SEM", "長尾關鍵字", "廣告文案"],
+                description: "延伸長尾關鍵字，並根據不同受眾與語氣生成多組廣告文案。",
+                content: "我是 [公司] 的數位行銷經理，正在為 [產品] 規劃 SEM 廣告。以下是我目前的種子關鍵字：[列出關鍵字]。請協助我延伸更多相關關鍵字，以及能提升廣告成效的長尾關鍵字與關鍵詞組。\n\n(發想文案)\n請以這些關鍵字為靈感，為 [產品] 的 SEM 活動產出多組廣告文案，包含不同的：標題、描述和行動號召。文案請使用 [語氣] 語氣。\n\n(切換受眾)\n請進行相同的任務，但改為針對 [目標族群] 撰寫，並將語氣調整為 [語氣風格]，同時聚焦強調 [產品] 的 [功能／特色]。",
+                tags: ["SEM", "廣告文案", "關鍵字擴充"],
                 details: `
-                    <h4>三步驟 SEM 優化流程：</h4>
-                    <p><strong>步驟一：延伸關鍵字清單</strong><br>從種子關鍵字出發，延伸更多相關關鍵字及長尾關鍵字。</p>
-                    <p><strong>步驟二：生成多版本廣告文案</strong><br>以關鍵字為靈感，生成包含標題、描述和行動號召的多組文案。</p>
-                    <h4>步驟三：針對特定受眾調整文案</h4>
-                    <code>請進行相同的任務，但改為針對 [目標族群] 撰寫，語氣調整為 [語氣風格]，並聚焦強調 [產品] 的 [功能／特色]。</code>
-                    <h4>English Prompt:</h4>
-                    <code>I am a digital marketing manager at [company]. Help me generate a list of additional keywords and long-tail keywords for [product] SEM campaign. Seed keywords: [list]. Then generate multiple ad copy variations including headlines, descriptions, and CTAs...</code>
+                    <h4>三階段流程：</h4>
+                    <ol>
+                        <li>給予種子關鍵字，要求擴充長尾詞。</li>
+                        <li>要求以關鍵字為靈感生成不同組合的文案。</li>
+                        <li>針對特定子族群調整語氣與強調重點。</li>
+                    </ol>
                 `
             },
             {
                 id: 10,
-                title: "數位行銷：電子報主旨提案",
+                title: "獲取新客電子報主旨提案",
                 category: "數位行銷",
-                description: "撰寫吸睛主旨並草擬寄給團隊的提案郵件。",
-                content: "請撰寫三個不同的電子報主旨，需同時提及 [受眾分眾] 與我們的 [產品]。風格需吸睛但保持專業。產出後，請撰寫一封寄給文案團隊的簡短電子郵件，提案上述主旨並請對方於本週結束前提供回饋。",
-                tags: ["Email行銷", "主旨優化", "團隊溝通"],
+                description: "撰寫吸睛電子報主旨，並草擬寄給文案團隊的提案郵件。",
+                content: "請撰寫三個不同的電子報主旨，需同時提及 [受眾分眾] 與我們的 [產品]。風格需吸睛但保持專業。\n\n(聯絡團隊)\n請撰寫一封寄給文案團隊的電子郵件，內容為提案上述的 [建議電子報主旨]。郵件需簡短清楚，並請對方於本週結束前提供回饋，最後感謝他們的協助。",
+                tags: ["Email行銷", "主旨發想", "內部溝通"],
                 details: `
                     <h4>English Prompt:</h4>
-                    <code>Write three different email subject lines that reference [audience segments] and our [product]...</code>
+                    <code>Write three different email subject lines that reference [audience segments] and our [product]. Make them catchy but professional.</code>
                 `
             },
             {
                 id: 11,
-                title: "數位行銷：Landing Page 與自動化郵件",
+                title: "集客式 Landing Page 與自動化郵件",
                 category: "數位行銷",
-                description: "為電子書或線上研討會撰寫網頁文案與後續培養郵件。",
-                content: "請為一個全新的 [電子書／線上研討會] 撰寫具說服力的一頁式網站文案，目標對象為高階主管族群。此外，請產出一組由五封組成的自動化培養型電子郵件內容，用於下載後的潛在客戶維繫。",
-                tags: ["集客行銷", "轉化率", "自動化"],
+                description: "為高階主管撰寫封閉素材網頁文案，及後續五封培養郵件。",
+                content: "請為一個全新的 [電子書／線上研討會／免費試用（說明細節）] 撰寫具說服力的一頁式網站文案，目標對象為高階主管族群。請強調關鍵效益，並以有力的行動呼籲促進轉換。\n\n(後續培養)\n請為下載了［主題］電子書的潛在客戶，產出一組由五封組成的自動化培養型電子郵件內容。郵件需進行個人化設計，並引導收件人進一步互動，例如[推薦其他有價值的資源或相關優惠]。",
+                tags: ["集客行銷", "自動化郵件", "B2B"],
                 details: `
-                    <h4>English Prompt:</h4>
-                    <code>Create compelling copy for a landing page promoting a new [ebook/webinar]...</code>
+                    <h4>操作指引：</h4>
+                    <p>適用於 B2B 行銷中提供白皮書或電子書換取名單 (Lead Generation) 的情境。前端靠 Landing Page 獲客，後端靠 5 封序列郵件培養信任。</p>
                 `
             },
 
             // --- 實例四：內容行銷經理 ---
             {
                 id: 12,
-                title: "內容行銷：五步驟培養郵件",
+                title: "五步驟 Drip Campaign 培養流程",
                 category: "內容行銷",
-                description: "利用現有產品文件設計轉換導向的郵件流程。",
-                content: "請設計一組五步驟的培養型電子郵件流程，寄送給已訂閱電子報的 [潛在客戶]，目標是促使他們[購買][產品]。請使用 @[產品規格筆記] 與 @[常見問題] 作為內容依據。",
-                tags: ["DripCampaign", "內容轉換", "個人化"],
+                description: "利用現有產品筆記與 FAQ，設計促銷轉換的序列郵件。",
+                content: "請設計一組五步驟的培養型電子郵件流程，寄送給已訂閱 [我們電子報] 的 [潛在客戶]，目標是促使他們[購買][產品]。請使用 @[Product Specific Notes] 與 @[Product FAQ] 作為內容依據。",
+                tags: ["DripCampaign", "轉換漏斗", "郵件行銷"],
                 details: `
                     <h4>English Prompt:</h4>
-                    <code>Create a 5-step nurture email cadence to [prospective customers]...</code>
+                    <code>Create a 5-step nurture email cadence to [prospective customers] who have signed up for [our newsletter], with the goal of getting them to [purchase] [product] using @[Product Specific Notes] and @[Product FAQ].</code>
                 `
             },
             {
                 id: 13,
-                title: "內容行銷：社群媒體創意貼文",
+                title: "社群媒體創意貼文 (多受眾)",
                 category: "內容行銷",
-                description: "發想創意主題並產出具吸睛語言與 Hashtag 的貼文。",
-                content: "請為 [產品／服務] 撰寫三則具吸引力的社群貼文，目標受眾為 [受眾]。每則限兩句話並含網址。另外請為即將舉辦的 [活動名稱] 撰寫一則吸睛貼文，搭配適合應屆畢業生的 Hashtag。",
-                tags: ["社群經營", "Hashtag", "活動宣傳"],
+                description: "發想簡短吸睛的社群貼文與專屬 Hashtag。",
+                content: "請撰寫三則具吸引力的社群貼文，主題為 [產品／服務／議題]，目標受眾為 [目標受眾]。每則貼文限兩句話，並需包含導向 [我們的網站] 的行動呼籲。\n\n(針對特定活動)\n請撰寫一則社群貼文，宣傳即將舉辦的 [活動名稱]。內容需具吸睛效果，並搭配適合 [目標受眾] 的相關 Hashtag。",
+                tags: ["社群經營", "貼文文案", "Hashtag"],
                 details: `
-                    <h4>English Prompt:</h4>
-                    <code>Write three engaging social media posts about [product/service/topic]...</code>
+                    <h4>操作指引：</h4>
+                    <p>限制「兩句話」能迫使 AI 產出適合 IG/FB 等快速滑過平台的短小精悍文案。</p>
                 `
             },
             {
                 id: 14,
-                title: "內容行銷：策略行銷計畫與 CMO 郵件",
+                title: "策略行銷計畫與回報 CMO 郵件",
                 category: "內容行銷",
-                description: "制定完整行銷策略並撰寫回報高層的一頁式計畫摘要。",
-                content: "我正在為一款提供 [功能] 的新 App 擬定行銷計畫。請協助制定完整行銷策略（含競品分析、管道組合、預算、KPI）。完成後，請撰寫一封寄給 CMO 的電子郵件，說明將於 [日期] 提供該專案的策略一頁式文件。",
-                tags: ["營運策略", "KPI", "高階回報"],
+                description: "為新產品擬定完整行銷策略，並撰寫給高階主管的一頁式摘要預告信。",
+                content: "我正在為一款提供 [功能] 的新 App 擬定行銷計畫，目標受眾為 [目標受眾]。請協助我制定一份聚焦於 [行銷管道] 的完整行銷策略，並涵蓋以下內容：競品分析、理想的行銷管道組合與選擇理由、預算配置建議、核心訊息主軸、行銷活動時程與對應 KPI\n\n(回報主管)\n請協助我撰寫一封寄給 CMO 的電子郵件，說明我將於 [日期] 前提供一份新 App 上線專案的策略一頁式文件（One-pager）。該文件將包含：高階主管摘要、競爭環境概覽、主要行銷管道、涵蓋所有南美市場的目標族群說明",
+                tags: ["營運策略", "GTM", "向上溝通"],
                 details: `
                     <h4>English Prompt:</h4>
-                    <code>I’m developing a marketing plan for a new app... Help me create a plan covering competitor analysis, budget, and KPIs...</code>
+                    <code>I’m developing a marketing plan for a new app... Help me create a plan with a focus on [marketing channels] covering competitor analysis, budget, key messaging, timeline, and KPIs.</code>
                 `
             },
 
-            // --- 圖像生成專業區 (設計師 Kevin 精華) ---
+            // --- 市場調查 ---
+            {
+                id: 40,
+                title: "市場調查報告 (10 種情境範本)",
+                category: "市場調查",
+                description: "從市場規模、競爭態勢、新興領域到特定族群分析的各類市調 Prompt。",
+                content: "請根據您的需求修改以下範本：\n1. 請為我產生一份關於 [產品名稱] 在 [地區] 市場的研究報告，包括市場規模、競爭態勢、消費者需求和趨勢分析。\n2. 撰寫一份關於 [傳統產業] 在數位轉型背景下的市場調查報告，考察市場反應與技術障礙。\n3. 為我準備一份關於 [特定消費群體 (如年輕人)] 對 [產品類別] 需求的市場調查報告。\n4. 以 [未來 3 年] 為範圍，產生一份 [市場名稱] 的市場調查報告，涵蓋動態、政策影響和發展趨勢。\n5. 產生一份關於 [競爭對手名稱] 在 [市場範圍] 的市場調查報告，分析其產品、行銷策略和表現。",
+                tags: ["市調報告", "競爭分析", "趨勢預測"],
+                details: `
+                    <h4>進階資料收集與分析指令：</h4>
+                    <ul>
+                        <li><strong>資料收集：</strong>「請 AI 收集 2023 年全球智慧型手機市場銷售數據，並分析市佔率變化。」</li>
+                        <li><strong>趨勢預測：</strong>「利用 AI 預測 2024 年健康食品市場的成長趨勢，並指出潛在機會。」</li>
+                        <li><strong>消費者行為：</strong>「基於社群媒體數據，AI 描繪目標消費者的畫像，並分析他們的偏好。」</li>
+                    </ul>
+                `
+            },
+
+            // --- 職場生圖 (圖像生成) ---
+            {
+                id: 50,
+                title: "「視覺筆記」生成 3 步驟",
+                category: "生圖",
+                description: "解決 AI 生圖「外星文字」問題，穩定產出簡報級 Sketchnote。",
+                content: "為上述筆記製作一張手繪的『視覺筆記』(sketchnote) 圖像摘要。背景使用潔白的紙張（無格線）。藝術風格應為『圖像記錄』(graphic recording) 或『視覺思考』(visual thinking)，使用黑色細針筆描繪清晰的輪廓與文字。使用彩色馬克筆（藍綠色、橘色）進行簡單的陰影處理與點綴。將主標題置中於長方形框內，周圍放射狀分佈塗鴉、圖表。文字清晰獨特，採用手寫全大寫印刷體風格。版面 A4，文字採用台灣繁體中文。",
+                tags: ["視覺筆記", "Sketchnote", "資訊視覺化"],
+                details: `
+                    <h4>核心心法：先邏輯，後視覺</h4>
+                    <ol>
+                        <li><strong>步驟一：結構化</strong> 不要把長文直接丟給影像模型。先請 AI 摘要：「請將這段內容歸納成簡短、獨立的學習重點，讓我能快速掌握核心。」</li>
+                        <li><strong>步驟二：啟動 Gemini</strong> 貼上摘要文字，接著貼上左側的標準化 Prompt。</li>
+                        <li><strong>步驟三：優化良率</strong> 保持每一點「短句化」(一行內)。若內容過長，先分組 (3-5個主題) 再分次生成。</li>
+                    </ol>
+                `
+            },
+            {
+                id: 51,
+                title: "簡報首頁投影片 (高階主管報告)",
+                category: "生圖",
+                description: "生成商務專業感、大量留白、適合放置文字的 PPT 首頁背景。",
+                content: "生成一張 PPT 開場首頁圖片，主題為「2025 Q1 業務回顧與展望」，比例 16:9。風格為商務專業感 (Corporate Professional)，主色調為深藍色搭配金色點綴，畫面需大量留白。左側使用抽象線條與上升箭頭象徵成長趨勢，右側預留留白空間以便放置標題文字。整體視覺穩重、大氣，適合對董事會及高階主管進行簡報。",
+                tags: ["PPT背景", "商務報告", "16:9"],
+                details: `
+                    <h4>適用場景：</h4>
+                    <p>季度報告、策略簡報、投資人關係 (IR) 簡報。</p>
+                `
+            },
+            {
+                id: 52,
+                title: "徵才 / 內部公告宣傳海報",
+                category: "生圖",
+                description: "生成結合情境插畫與文字預留區的現代簡約海報。",
+                content: "生成一張徵才海報，尺寸 1200x628px，宣傳「資深行銷專員 (Senior Marketing Executive)」職缺。畫面右側為文字區域，包含：職稱、公司名稱、三點工作重點、以及福利加分項「週休二日、彈性遠距辦公 (WFH)」。左側為辦公室情境的照片風格插畫，人物年齡約 25-35 歲，穿著商務休閒裝 (Smart Casual)。整體風格現代簡約，主色調為藍色配綠色點綴，文字必須清晰易讀。",
+                tags: ["海報設計", "徵才宣傳", "HR公告"],
+                details: `
+                    <h4>適用場景：</h4>
+                    <p>招募新血、HR 內部公告、活動報名。指定尺寸 1200x628 適合用於 LinkedIn 或 FB 連結預覽圖。</p>
+                `
+            },
+            {
+                id: 53,
+                title: "KPI 數據儀表板概覽圖",
+                category: "生圖",
+                description: "生成現代數據視覺化風格的 2x2 指標概覽圖。",
+                content: "生成一張月度 KPI 儀表板圖片，背景為白色，風格為現代數據視覺化 (Modern Data Visualization)。展示四個指標：1) 月營收 NT$250萬 (綠色向上箭頭)，2) 新客戶數 480 (橘色)，3) 客戶留存率 92% (綠色)，4) NPS 推薦分數 72 (藍色)。四項指標排列成 2x2 方格，每個指標包含大數字、標題與簡短描述。整體字體簡潔、大量留白，適合放入主管簡報中。",
+                tags: ["數據視覺化", "儀表板", "KPI報告"],
+                details: `
+                    <h4>適用場景：</h4>
+                    <p>月報/季報摘要、一頁式績效總結。讓枯燥的數字轉化為高質感的資訊圖表。</p>
+                `
+            },
+            {
+                id: 54,
+                title: "社群媒體圖卡 (FB/IG)",
+                category: "生圖",
+                description: "生成明亮現代感、文字極度清晰的知識分享圖卡。",
+                content: "生成一張 Instagram 貼文圖片，尺寸 1080x1080px，主題為「職場 AI 應用小撇步」。畫面中央用大字寫下「想用好 AI，先學會怎麼問」，下方用三個列點圖示表示「明確目標」、「提供背景」、「指定格式」，每個項目配上簡單的圖示 (Icon)。風格為明亮現代感，主色為白底配亮藍與橘色，文字需極度清晰，方便手機用戶閱讀。",
+                tags: ["社群圖卡", "IG貼文", "乾貨分享"],
+                details: `
+                    <h4>適用場景：</h4>
+                    <p>職場乾貨分享、宣傳文章、推廣活動。強調「大字」與「極度清晰」確保手機閱讀體驗。</p>
+                `
+            },
+            {
+                id: 55,
+                title: "流程圖 / 時程線 (Timeline)",
+                category: "生圖",
+                description: "繪製由左至右、簡約商務風的流程步驟圖。",
+                content: "繪製一張招募流程 (Recruitment Process) 流程圖，由左至右排列五個關鍵步驟。每個步驟由圓形節點、簡單圖示與英文標題組成，下方加上一句中文說明文字。步驟間以箭頭連接，整體風格為簡約商務風 (Corporate Clean)，白色背景配深灰色線條與藍色重點。尺寸需適合印製在 A4 訓練手冊上，設計需簡潔且邏輯清晰。",
+                tags: ["流程圖", "SOP", "教育訓練"],
+                details: `
+                    <h4>適用場景：</h4>
+                    <p>內部訓練、SOP 說明、新進員工入職流程。這比用 PPT 土法煉鋼拉圓圈和箭頭快得多。</p>
+                `
+            },
             {
                 id: 15,
-                title: "GPT Image 2 圖像生成 SOP",
-                category: "圖像生成",
-                description: "設計師 Kevin 整理的商用圖像生成結構與實戰 SOP。",
+                title: "GPT Image 2 圖像生成 SOP (10個Section)",
+                category: "生圖",
+                description: "設計師 Kevin 整理的商用圖像生成結構，提升品牌一致性。",
                 content: "請作為專業視覺設計師，協助我使用 GPT Image 2 產出高品質商用圖片。我會提供參考圖，請你依據風格(Style)、構圖(Composition)、文字內容(Text)、品牌顏色(Hex)等 10 個 Section 結構進行生成。目前產品是：[描述]。",
-                tags: ["GPTImage2", "商用設計", "SOP"],
+                tags: ["GPTImage2", "商用設計", "提示結構"],
                 details: `
                     <h4>設計師建議的 10 個 Section 結構：</h4>
                     <table class="sop-table">
@@ -384,173 +528,208 @@
                         <li><strong>Mockup：</strong> 要求 Logo 在曲面上有正確變形。</li>
                     </ul>
                 `
-            },
-            // --- MD 新增內容 ---
-            {
-                id: 17,
-                title: "內容行銷：廣告活動視覺素材",
-                category: "內容行銷",
-                description: "為廣告代理商提供創意方向，構思行銷活動的啟發性圖像素材。",
-                content: "請協助我為一項 [產品類型] 的行銷活動構思具啟發性的圖片。\n- 使用顏色：[指定顏色]\n- 結合元素：[自然元素，例如雲朵]\n- 整體風格：[寫實風]",
-                tags: ["視覺素材", "廣告創意", "圖像設計"],
-                details: `
-                    <h4>操作指引：</h4>
-                    <p>適用於為廣告代理商或設計師提供明確的創意方向，加速視覺素材的產出。建議搭配品牌色票與風格參考圖使用。</p>
-                    <h4>建議填寫範例：</h4>
-                    <ul>
-                        <li><strong>使用顏色：</strong>品牌藍 #1A73E8、純白 #FFFFFF</li>
-                        <li><strong>結合元素：</strong>雲朵、自然光線、戶外場景</li>
-                        <li><strong>整體風格：</strong>寫實商業感、乾淨明亮</li>
-                    </ul>
-                    <h4>English Prompt:</h4>
-                    <code>Help me create inspiring images for a [product type] marketing campaign. Use colors: [specify colors]. Incorporate elements: [natural elements, e.g. clouds]. Overall style: [realistic].</code>
-                `
-            },
-            {
-                id: 18,
-                title: "內容行銷：部落格主題發想",
-                category: "內容行銷",
-                description: "為旅遊或特定產業部落格進行主題腦力激盪，包含受眾分析與文章大綱。",
-                content: "請提出適合熱愛旅遊與觀光產業讀者的部落格文章主題建議。\n重點要求：\n- 主題需具獨特性（能從眾多旅遊部落格中脫穎而出）\n- 主題需具時效與關聯性（結合產業近期趨勢或創新）\n\n每個主題請包含：\n1. 目標受眾：此主題最吸引哪一類讀者？\n2. 內容大綱：條列文章將探討的重點\n3. 行動號召：建議文章結尾的讀者互動方式",
-                tags: ["部落格", "內容規劃", "SEO主題"],
-                details: `
-                    <h4>操作指引：</h4>
-                    <p>適用於內容行銷團隊規劃季度或月度內容日曆。只需替換產業（如金融、科技、健康），即可跨領域重複使用。</p>
-                    <h4>進階技巧：</h4>
-                    <ul>
-                        <li>加上「請結合 [近期產業新聞或趨勢] 提出更具時效性的主題」。</li>
-                        <li>要求 AI 同步為每個主題產出 SEO 關鍵字建議。</li>
-                        <li>可請 AI 評估每個主題的競爭難度（低／中／高）。</li>
-                    </ul>
-                `
-            },
-            {
-                id: 19,
-                title: "快速參考：提示詞撰寫技巧",
-                category: "通用指南",
-                description: "七大提示詞撰寫技巧速查表，助你更高效與 AI 協作產出最佳結果。",
-                content: "明確角色：開頭說明「我是 [公司] 的 [職位]」，給 AI 更精準的情境\n結構化需求：用條列方式列出希望 AI 涵蓋的項目，避免遺漏\n標記檔案：使用 @檔案名稱 讓 AI 直接引用既有文件內容\n指定語氣：明確說明文案風格（如：專業、吸睛、溫暖）\n多版本測試：要求生成 3 個以上變體，用於 A/B 測試\n分步驟執行：複雜任務拆解成多次對話，逐步優化結果\n驗證回覆：使用「查證回覆內容」功能確認 AI 輸出的準確性",
-                tags: ["技巧速查", "高效協作", "最佳實踐"],
-                details: `
-                    <h4>七大提示詞撰寫技巧：</h4>
-                    <table class="sop-table">
-                        <tr><th>技巧</th><th>說明</th></tr>
-                        <tr><td><strong>明確角色</strong></td><td>開頭說明「我是 [公司] 的 [職位]」，給 AI 更精準的情境</td></tr>
-                        <tr><td><strong>結構化需求</strong></td><td>用條列方式列出希望 AI 涵蓋的項目，避免遺漏</td></tr>
-                        <tr><td><strong>標記檔案</strong></td><td>使用 @檔案名稱 讓 AI 直接引用既有文件內容</td></tr>
-                        <tr><td><strong>指定語氣</strong></td><td>明確說明文案風格（如：專業、吸睛、溫暖）</td></tr>
-                        <tr><td><strong>多版本測試</strong></td><td>要求生成 3 個以上變體，用於 A/B 測試</td></tr>
-                        <tr><td><strong>分步驟執行</strong></td><td>複雜任務拆解成多次對話，逐步優化結果</td></tr>
-                        <tr><td><strong>驗證回覆</strong></td><td>使用「查證回覆內容」功能確認 AI 輸出的準確性</td></tr>
-                    </table>
-                `
-            },
-
-            {
-                id: 16,
-                title: "密度鏈 (Chain of Density) 摘要術",
-                category: "進階技巧",
-                description: "透過迭代補充細節，生成資訊密度極高且簡潔的文件摘要。",
-                content: "撰寫一個更緊湊的新摘要，補充先前摘要中缺少的相關資訊，文章長度要相同，避免冗長語句。",
-                tags: ["摘要", "密度鏈", "資訊壓縮"],
-                details: `
-                    <h4>操作流程：</h4>
-                    <p>這是一個迭代過程。1. 先生出普通摘要。2. 識別 2 個漏掉的關鍵名詞。3. 融入名詞並維持原句數。重複 3 次效果最佳。</p>
-                `
             }
         ];
 
         let currentCategory = '全部';
         let currentSearch = '';
+        let openCardId = null; // 追蹤當前打開的手風琴卡片
 
         function init() {
-            renderCategories();
-            renderCards();
+            renderSidebar();
+            renderList();
             lucide.createIcons();
+            document.getElementById('totalCount').innerText = INITIAL_DATA.length;
+
+            // 搜尋事件
             document.getElementById('searchInput').addEventListener('input', (e) => {
                 currentSearch = e.target.value.toLowerCase();
-                renderCards();
+                renderList();
+            });
+
+            // 手機版選單切換
+            document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+                const sidebar = document.getElementById('sidebarContent');
+                sidebar.classList.toggle('hidden');
+                sidebar.classList.toggle('flex');
             });
         }
 
-        function renderCategories() {
+        // --- 渲染左側分類導覽 ---
+        function renderSidebar() {
+            // 計算每個分類的數量
+            const catCounts = INITIAL_DATA.reduce((acc, item) => {
+                acc[item.category] = (acc[item.category] || 0) + 1;
+                return acc;
+            }, {});
+
             const categories = ['全部', ...new Set(INITIAL_DATA.map(i => i.category))];
             const container = document.getElementById('categoryContainer');
-            container.innerHTML = categories.map(cat => `
-                <button onclick="filterCategory('${cat}')" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border-2 ${cat === currentCategory ? 'bg-slate-900 text-white border-slate-900 shadow-md' : 'bg-white text-slate-500 border-slate-100 hover:bg-slate-100'}">
-                    ${cat}
-                </button>
-            `).join('');
+            
+            container.innerHTML = categories.map(cat => {
+                const count = cat === '全部' ? INITIAL_DATA.length : catCounts[cat];
+                const isActive = cat === currentCategory;
+                return `
+                    <button onclick="filterCategory('${cat}')" 
+                        class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all flex justify-between items-center group ${
+                            isActive 
+                            ? 'bg-blue-50 text-blue-700' 
+                            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                        }">
+                        <span>${cat}</span>
+                        <span class="text-xs ${isActive ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200'} px-2 py-0.5 rounded-full transition-colors">
+                            ${count}
+                        </span>
+                    </button>
+                `;
+            }).join('');
         }
 
         function filterCategory(cat) {
             currentCategory = cat;
-            renderCategories();
-            renderCards();
+            openCardId = null; // 切換分類時關閉所有展開項目
+            
+            // 手機版點擊分類後自動收合選單
+            if (window.innerWidth < 768) {
+                const sidebar = document.getElementById('sidebarContent');
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('flex');
+            }
+
+            renderSidebar();
+            renderList();
+            
+            // 捲動回頂部
+            document.getElementById('mainScrollArea').scrollTop = 0;
         }
 
-        function renderCards() {
-            const grid = document.getElementById('toolGrid');
+        // --- 渲染右側列表內容 ---
+        function renderList() {
+            const list = document.getElementById('toolList');
             const empty = document.getElementById('emptyState');
+            
             const filtered = INITIAL_DATA.filter(item => {
                 const matchesSearch = item.title.toLowerCase().includes(currentSearch) || 
                                      item.tags.some(t => t.toLowerCase().includes(currentSearch)) ||
-                                     item.description.toLowerCase().includes(currentSearch);
+                                     item.description.toLowerCase().includes(currentSearch) ||
+                                     item.content.toLowerCase().includes(currentSearch);
                 const matchesCat = currentCategory === '全部' || item.category === currentCategory;
                 return matchesSearch && matchesCat;
             });
 
-            if (filtered.length === 0) { grid.innerHTML = ''; empty.classList.remove('hidden'); return; }
+            // 更新標題列狀態
+            document.getElementById('currentCategoryTitle').innerHTML = `
+                ${currentCategory} <span class="text-sm font-normal text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">${filtered.length}</span>
+            `;
+
+            if (filtered.length === 0) { 
+                list.innerHTML = ''; 
+                empty.classList.remove('hidden'); 
+                empty.classList.add('flex');
+                return; 
+            }
+            
             empty.classList.add('hidden');
-            grid.innerHTML = filtered.map(item => `
-                <div onclick="openModal(${item.id})" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 hover:border-blue-500 hover:shadow-xl hover:shadow-blue-100/30 cursor-pointer flex flex-col group">
-                    <div class="flex justify-between items-start mb-3">
-                        <span class="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 bg-slate-100 text-slate-500 rounded group-hover:bg-blue-600 group-hover:text-white transition-colors">${item.category}</span>
-                        <i data-lucide="external-link" class="w-3 h-3 text-slate-300"></i>
+            empty.classList.remove('flex');
+
+            list.innerHTML = filtered.map(item => {
+                const isOpen = openCardId === item.id;
+                
+                return `
+                <div class="tool-card bg-white rounded-xl border ${isOpen ? 'border-blue-300 shadow-md ring-1 ring-blue-50' : 'border-slate-200 hover:border-slate-300'} overflow-hidden">
+                    
+                    <!-- 卡片標題區 (可點擊展開/收合) -->
+                    <div onclick="toggleCard(${item.id})" class="p-4 md:p-5 cursor-pointer flex gap-4 items-start select-none">
+                        <div class="mt-1 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-90 text-blue-500' : ''}">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                                <h3 class="text-base font-bold text-slate-800">${item.title}</h3>
+                                ${currentCategory === '全部' ? `<span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">${item.category}</span>` : ''}
+                            </div>
+                            <p class="text-slate-500 text-sm mb-3 ${isOpen ? '' : 'line-clamp-1'} transition-all">${item.description}</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                ${item.tags.map(t => `<span class="text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">#${t}</span>`).join('')}
+                            </div>
+                        </div>
+                        <button onclick="event.stopPropagation(); copyText('${item.id}')" class="shrink-0 flex items-center justify-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 rounded-lg text-xs font-semibold transition-colors" title="複製指令">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">複製</span>
+                        </button>
                     </div>
-                    <h3 class="text-sm font-bold mb-1.5 text-slate-800 group-hover:text-blue-600 transition-colors">${item.title}</h3>
-                    <p class="text-slate-500 text-sm mb-4 line-clamp-2">${item.description}</p>
-                    <div class="flex flex-wrap gap-1 mt-auto">
-                        ${item.tags.map(t => `<span class="text-[11px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded font-bold">#${t}</span>`).join('')}
+
+                    <!-- 手風琴展開內容區 -->
+                    <div class="accordion-content ${isOpen ? 'open' : ''}">
+                        <div class="accordion-inner bg-slate-50 border-t border-slate-100">
+                            <div class="p-4 md:p-6 grid md:grid-cols-2 gap-6">
+                                
+                                <!-- 左側：Prompt 原文 -->
+                                <div>
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <i data-lucide="terminal-square" class="w-4 h-4 text-blue-600"></i>
+                                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Prompt</h4>
+                                    </div>
+                                    <div id="prompt-content-${item.id}" class="prompt-box bg-white border border-slate-200 p-4 rounded-lg text-sm text-slate-700 shadow-sm">
+${item.content}
+                                    </div>
+                                    <button onclick="copyText('${item.id}')" class="w-full mt-3 py-2.5 bg-white border border-slate-200 hover:border-blue-400 hover:bg-blue-50 text-slate-700 hover:text-blue-700 font-semibold text-sm rounded-lg flex justify-center items-center gap-2 transition-colors">
+                                        <i data-lucide="copy" class="w-4 h-4"></i> 複製指令
+                                    </button>
+                                </div>
+
+                                <!-- 右側：實戰指引 (Details) -->
+                                <div>
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <i data-lucide="info" class="w-4 h-4 text-amber-500"></i>
+                                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Guide & Details</h4>
+                                    </div>
+                                    <div class="prose max-w-none bg-transparent">
+                                        ${item.details}
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
+            
             lucide.createIcons();
         }
 
-        function openModal(id) {
-            const item = INITIAL_DATA.find(i => i.id === id);
+        // --- 互動邏輯 ---
+        function toggleCard(id) {
+            // 點擊已展開的，則關閉；點擊未展開的，則展開該項並關閉其他
+            openCardId = openCardId === id ? null : id;
+            renderList();
+        }
+
+        function copyText(id) {
+            const item = INITIAL_DATA.find(i => i.id == id);
             if (!item) return;
-            document.getElementById('modalTitle').innerText = item.title;
-            document.getElementById('modalContent').innerText = item.content;
-            document.getElementById('modalDetails').innerHTML = item.details;
-            document.getElementById('modalOverlay').classList.remove('hidden');
-            document.body.classList.add('lock-scroll');
-            const copyBtn = document.getElementById('copyBtn');
-            copyBtn.onclick = () => {
-                const textArea = document.createElement("textarea");
-                textArea.value = item.content;
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    copyBtn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i><span>指令已複製</span>`;
-                    copyBtn.classList.replace('bg-slate-900', 'bg-green-600');
-                    lucide.createIcons();
-                    setTimeout(() => {
-                        copyBtn.innerHTML = `<i data-lucide="copy" class="w-4 h-4"></i><span>複製指令</span>`;
-                        copyBtn.classList.replace('bg-green-600', 'bg-slate-900');
-                        lucide.createIcons();
-                    }, 2000);
-                } catch (err) { console.error('複製失敗'); }
-                document.body.removeChild(textArea);
-            };
-            lucide.createIcons();
+
+            const textArea = document.createElement("textarea");
+            textArea.value = item.content;
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast();
+            } catch (err) {
+                console.error('複製失敗');
+            }
+            document.body.removeChild(textArea);
         }
 
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.add('hidden');
-            document.body.classList.remove('lock-scroll');
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
         }
 
         window.onload = init;
