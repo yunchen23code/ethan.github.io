@@ -11,8 +11,22 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
         
+        :root {
+            /* 更舒服的閱讀基準：手機略小、桌機略大 */
+            --base-font-size: clamp(16px, 1.1vw + 12px, 18px);
+            --base-line-height: 1.7;
+        }
+
+        html {
+            font-size: var(--base-font-size);
+            -webkit-text-size-adjust: 100%;
+            text-rendering: optimizeLegibility;
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 1rem;
+            line-height: var(--base-line-height);
             margin: 0;
             padding: 0;
             overflow-x: hidden;
@@ -37,16 +51,22 @@
         }
 
         /* 詳細內容樣式 */
-        .prose h4 { font-weight: 800; color: #1e293b; margin-top: 1.5rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem; border-left: 4px solid #3b82f6; padding-left: 0.75rem; }
-        .prose p { font-size: 0.9rem; color: #475569; line-height: 1.6; margin-bottom: 0.75rem; }
+        .prose h4 { font-weight: 800; color: #1e293b; margin-top: 1.5rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.15rem; border-left: 4px solid #3b82f6; padding-left: 0.75rem; }
+        .prose p { font-size: 1rem; color: #475569; line-height: 1.75; margin-bottom: 0.9rem; }
         .prose ul, .prose ol { padding-left: 1.25rem; margin-bottom: 1rem; }
-        .prose li { font-size: 0.85rem; color: #475569; margin-bottom: 0.4rem; }
+        .prose li { font-size: 1rem; color: #475569; margin-bottom: 0.5rem; }
         .prose strong { color: #0f172a; font-weight: 700; }
-        .prose code { background-color: #f1f5f9; padding: 2px 4px; border-radius: 4px; font-family: monospace; color: #e11d48; font-size: 0.85em; display: block; margin: 0.5rem 0; white-space: pre-wrap; }
+        .prose code { background-color: #f1f5f9; padding: 8px 10px; border-radius: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; color: #e11d48; font-size: 0.95em; display: block; margin: 0.75rem 0; white-space: pre-wrap; line-height: 1.6; }
         
-        .sop-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.8rem; }
+        .sop-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem; }
         .sop-table th { background: #f8fafc; text-align: left; padding: 8px; border: 1px solid #e2e8f0; font-weight: 700; }
         .sop-table td { padding: 8px; border: 1px solid #e2e8f0; vertical-align: top; }
+
+        /* 彈窗左側指令內容：由 text-xs 拉回可讀尺寸 */
+        #modalContent {
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
 
         /* 卡片懸停效果 */
         .tool-card {
@@ -75,7 +95,7 @@
                     type="text" 
                     id="searchInput"
                     placeholder="搜尋角色、技巧、Prompt..."
-                    class="w-full pl-9 pr-3 py-2 bg-slate-100 border-none rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all text-xs outline-none"
+                    class="w-full pl-9 pr-3 py-2.5 bg-slate-100 border-none rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all text-sm outline-none"
                 >
             </div>
         </div>
@@ -103,14 +123,14 @@
             <div class="md:w-5/12 p-5 lg:p-8 border-b md:border-b-0 md:border-r border-slate-100 flex flex-col bg-slate-50/50 overflow-hidden">
                 <div class="mb-4 flex justify-between items-start">
                     <div>
-                        <span class="text-[9px] font-black text-blue-600 bg-blue-100 px-2 py-0.5 rounded uppercase tracking-widest">Prompt Preview</span>
+                        <span class="text-[10px] font-black text-blue-600 bg-blue-100 px-2 py-0.5 rounded uppercase tracking-widest">Prompt Preview</span>
                         <h2 id="modalTitle" class="text-lg lg:text-xl font-bold text-slate-900 mt-1"></h2>
                     </div>
                     <button onclick="closeModal()" class="md:hidden p-1.5 text-slate-400 bg-white rounded-full shadow-sm">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
-                <div id="modalContent" class="flex-1 bg-white border border-slate-200 rounded-xl p-4 overflow-y-auto text-xs font-mono text-slate-700 shadow-inner whitespace-pre-wrap"></div>
+                <div id="modalContent" class="flex-1 bg-white border border-slate-200 rounded-xl p-4 overflow-y-auto text-sm font-mono text-slate-700 shadow-inner whitespace-pre-wrap"></div>
                 <button id="copyBtn" class="mt-4 w-full py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 bg-slate-900 text-white hover:bg-blue-600 transition-all shadow-md active:scale-95 text-sm">
                     <i data-lucide="copy" class="w-4 h-4"></i>
                     <span>複製指令</span>
@@ -122,7 +142,7 @@
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
                 <div class="mb-4">
-                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
                         <i data-lucide="info" class="w-3 h-3"></i> 實戰指引與心法
                     </span>
                 </div>
@@ -457,7 +477,7 @@
             const categories = ['全部', ...new Set(INITIAL_DATA.map(i => i.category))];
             const container = document.getElementById('categoryContainer');
             container.innerHTML = categories.map(cat => `
-                <button onclick="filterCategory('${cat}')" class="px-3 py-1.5 rounded-xl text-[10px] font-bold whitespace-nowrap transition-all border-2 ${cat === currentCategory ? 'bg-slate-900 text-white border-slate-900 shadow-md' : 'bg-white text-slate-500 border-slate-100 hover:bg-slate-100'}">
+                <button onclick="filterCategory('${cat}')" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border-2 ${cat === currentCategory ? 'bg-slate-900 text-white border-slate-900 shadow-md' : 'bg-white text-slate-500 border-slate-100 hover:bg-slate-100'}">
                     ${cat}
                 </button>
             `).join('');
@@ -485,13 +505,13 @@
             grid.innerHTML = filtered.map(item => `
                 <div onclick="openModal(${item.id})" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 hover:border-blue-500 hover:shadow-xl hover:shadow-blue-100/30 cursor-pointer flex flex-col group">
                     <div class="flex justify-between items-start mb-3">
-                        <span class="text-[8px] font-black uppercase tracking-widest px-2 py-0.5 bg-slate-100 text-slate-500 rounded group-hover:bg-blue-600 group-hover:text-white transition-colors">${item.category}</span>
+                        <span class="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 bg-slate-100 text-slate-500 rounded group-hover:bg-blue-600 group-hover:text-white transition-colors">${item.category}</span>
                         <i data-lucide="external-link" class="w-3 h-3 text-slate-300"></i>
                     </div>
                     <h3 class="text-sm font-bold mb-1.5 text-slate-800 group-hover:text-blue-600 transition-colors">${item.title}</h3>
-                    <p class="text-slate-500 text-[11px] mb-4 line-clamp-2">${item.description}</p>
+                    <p class="text-slate-500 text-sm mb-4 line-clamp-2">${item.description}</p>
                     <div class="flex flex-wrap gap-1 mt-auto">
-                        ${item.tags.map(t => `<span class="text-[9px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded font-bold">#${t}</span>`).join('')}
+                        ${item.tags.map(t => `<span class="text-[11px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded font-bold">#${t}</span>`).join('')}
                     </div>
                 </div>
             `).join('');
