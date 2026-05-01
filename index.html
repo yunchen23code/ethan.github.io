@@ -13,8 +13,8 @@
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #f8fafc; /* slate-50 */
-            color: #0f172a; /* slate-900 */
+            background-color: #f8fafc;
+            color: #0f172a;
         }
 
         /* 自訂捲動條，讓介面更像應用程式 */
@@ -128,7 +128,7 @@
     </div>
 
     <script>
-        // --- 資料庫 (整合您提供的所有資料) ---
+        // --- 資料庫 ---
         const INITIAL_DATA = [
             // --- 網頁設計 ---
             {
@@ -137,11 +137,11 @@
                 category: "網頁設計",
                 description: "根據上傳文件內容，產出具備現代感 Bento Grid 風格、Tesla 紅色高亮與 Apple 滾動特效的 HTML 網頁。",
                 content: "根據[上傳文件名稱]的內容，產生一個 HTML 動態網頁，網頁產生的要求是：\n1. 使用Bento Grid風格的視覺設計，純黑色底搭配特斯拉紅色#E31937作為高亮\n2. 強調超大字體或數字突出核心要點，畫面中有超大視覺元素強調重點，與小元素的比例形成反差\n3. 中英文混用，中文大字體粗體，英文小字當點綴\n4. 簡潔的勾線圖形化作為資料視覺化或配圖元素\n5. 運用高亮色自身透明度漸層製造科技感，但是不同高亮色不要互相漸變\n6. 模仿 apple 官網的動效，向下滾動滑鼠配合動效\n7. 資料可以引用線上的圖表組件，樣式需要跟主題一致\n8. 使用 Framer Motion （透過CDN引入）\n9. 使用HTML5、TailwindCSS 3.0+（透過CDN引入）和必要的JavaScript\n10. 使用專業圖示庫如Font Awesome或Material Icons（透過CDN引入）\n11. 避免使用emoji作為主要圖標\n12. 將版面以及grid尺寸利用畫面分隔，以簡報檔案格式1920*1080作為分割，每個分割頁面按照資訊分類放入對應資料，每一頁的主題相同且明顯\n13. 不要省略內容要點",
-                tags: ["網頁生成", "BentoGrid", "Tailwind", "FramerMotion"],
+                tags: ["網頁生成", "BentoGrid", "Tailwind"],
                 details: `
                     <h4>使用技巧：</h4>
                     <p>這是一個非常具體且專業的網頁生成 Prompt。建議先整理好文案內容（Markdown 或 txt 檔），然後使用 <code>@檔案名稱</code> 或直接附上文件，再貼上此段指令。</p>
-                    <p>指令中明確指定了技術棧（Tailwind, Framer Motion, CDN）與視覺規範（黑紅配、大字體），能有效降低 AI 產出老舊風格網頁的機率。</p>
+                    <p>指令中明確指定了技術棧（Tailwind, Framer Motion, CDN）與視覺規範，能有效降低 AI 產出老舊風格網頁的機率。</p>
                 `
             },
 
@@ -225,7 +225,7 @@
                 content: "撰寫一個更緊湊的新摘要，補充先前摘要中缺少的相關資訊，文章長度要相同，避免冗長語句。",
                 tags: ["摘要整理", "密度鏈", "資訊壓縮", "進階"],
                 details: `
-                    <h4>操作流程 (胡安的例子)：</h4>
+                    <h4>操作流程：</h4>
                     <ol>
                         <li><strong>基本摘要：</strong> 先請 AI「以不超過四句話提供第一季度銷售報告的簡明摘要，重點放在整體表現」。</li>
                         <li><strong>紮實摘要：</strong> 使用此提示詞：「撰寫一個更緊湊的新摘要，補充缺失資訊，長度相同」。</li>
@@ -236,7 +236,6 @@
                         <li><strong>摘要長度：</strong> 指定句數。</li>
                         <li><strong>資訊深度：</strong> 從廣泛概述開始，逐漸加入具體細節。</li>
                         <li><strong>準確性：</strong> 要求以原始報告為依據。</li>
-                        <li><strong>篇幅限制：</strong> 長篇文件可分段上傳處理。</li>
                     </ul>
                 `
             },
@@ -409,25 +408,24 @@
                 `
             },
 
-            // --- 市場調查 ---
+            // --- 生圖 / 圖像生成 ---
             {
-                id: 40,
-                title: "市場調查報告 (10 種情境範本)",
-                category: "市場調查",
-                description: "從市場規模、競爭態勢、新興領域到特定族群分析的各類市調 Prompt。",
-                content: "請根據您的需求修改以下範本：\n1. 請為我產生一份關於 [產品名稱] 在 [地區] 市場的研究報告，包括市場規模、競爭態勢、消費者需求和趨勢分析。\n2. 撰寫一份關於 [傳統產業] 在數位轉型背景下的市場調查報告，考察市場反應與技術障礙。\n3. 為我準備一份關於 [特定消費群體 (如年輕人)] 對 [產品類別] 需求的市場調查報告。\n4. 以 [未來 3 年] 為範圍，產生一份 [市場名稱] 的市場調查報告，涵蓋動態、政策影響和發展趨勢。\n5. 產生一份關於 [競爭對手名稱] 在 [市場範圍] 的市場調查報告，分析其產品、行銷策略和表現。",
-                tags: ["市調報告", "競爭分析", "趨勢預測"],
+                id: 56,
+                title: "萬用 IG 輪播圖提示詞 (一鍵 5 張)",
+                category: "生圖",
+                description: "利用 ChatGPT Thinking 模型，將文章網址一鍵轉化為角色 IP 主導的 IG 4:5 輪播圖卡。",
+                content: "請將我這篇文章內容：[請貼上你的文章網址]，以我的角色 IP [替換成你的角色，例如：貓貓] 為主角，做成 5 張 Instagram 輪播圖。\n尺寸請設定為 1080×1350，讓我可以直接發社群宣傳使用。\n請使用台灣用的繁體中文，直接生成圖卡，並在最後一頁加上 CTA，鼓勵讀者按讚、追蹤及訂閱電子報。",
+                tags: ["IG輪播", "ChatGPT", "社群圖卡"],
                 details: `
-                    <h4>進階資料收集與分析指令：</h4>
-                    <ul>
-                        <li><strong>資料收集：</strong>「請 AI 收集 2023 年全球智慧型手機市場銷售數據，並分析市佔率變化。」</li>
-                        <li><strong>趨勢預測：</strong>「利用 AI 預測 2024 年健康食品市場的成長趨勢，並指出潛在機會。」</li>
-                        <li><strong>消費者行為：</strong>「基於社群媒體數據，AI 描繪目標消費者的畫像，並分析他們的偏好。」</li>
-                    </ul>
+                    <h4>💡 核心關鍵：指定模型</h4>
+                    <p>必須在 ChatGPT 左上角選擇<strong>「Thinking 模型」</strong>（需付費帳號），這是確保多圖連貫性與中文顯示正確的絕對關鍵。</p>
+                    <h4>🛠️ 修正與優化指令</h4>
+                    <p>如果初次生成的結果太擁擠，請直接下達以下修正指令：</p>
+                    <code>「請將第 [X] 張圖卡的內容多拆分成幾張圖卡重新生成，讓排版更清爽。」</code>
+                    <h4>📏 尺寸建議</h4>
+                    <p>設定為 <strong>1080×1350（IG 4:5 比例）</strong> 會比傳統方圖佔據更多手機螢幕版面，社群吸睛度更高。</p>
                 `
             },
-
-            // --- 職場生圖 (圖像生成) ---
             {
                 id: 50,
                 title: "「視覺筆記」生成 3 步驟",
@@ -533,7 +531,7 @@
 
         let currentCategory = '全部';
         let currentSearch = '';
-        let openCardId = null; // 追蹤當前打開的手風琴卡片
+        let openCardId = null; 
 
         function init() {
             renderSidebar();
@@ -541,13 +539,11 @@
             lucide.createIcons();
             document.getElementById('totalCount').innerText = INITIAL_DATA.length;
 
-            // 搜尋事件
             document.getElementById('searchInput').addEventListener('input', (e) => {
                 currentSearch = e.target.value.toLowerCase();
                 renderList();
             });
 
-            // 手機版選單切換
             document.getElementById('mobileMenuBtn').addEventListener('click', () => {
                 const sidebar = document.getElementById('sidebarContent');
                 sidebar.classList.toggle('hidden');
@@ -555,9 +551,7 @@
             });
         }
 
-        // --- 渲染左側分類導覽 ---
         function renderSidebar() {
-            // 計算每個分類的數量
             const catCounts = INITIAL_DATA.reduce((acc, item) => {
                 acc[item.category] = (acc[item.category] || 0) + 1;
                 return acc;
@@ -587,9 +581,8 @@
 
         function filterCategory(cat) {
             currentCategory = cat;
-            openCardId = null; // 切換分類時關閉所有展開項目
+            openCardId = null; 
             
-            // 手機版點擊分類後自動收合選單
             if (window.innerWidth < 768) {
                 const sidebar = document.getElementById('sidebarContent');
                 sidebar.classList.add('hidden');
@@ -598,12 +591,9 @@
 
             renderSidebar();
             renderList();
-            
-            // 捲動回頂部
             document.getElementById('mainScrollArea').scrollTop = 0;
         }
 
-        // --- 渲染右側列表內容 ---
         function renderList() {
             const list = document.getElementById('toolList');
             const empty = document.getElementById('emptyState');
@@ -617,7 +607,6 @@
                 return matchesSearch && matchesCat;
             });
 
-            // 更新標題列狀態
             document.getElementById('currentCategoryTitle').innerHTML = `
                 ${currentCategory} <span class="text-sm font-normal text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">${filtered.length}</span>
             `;
@@ -638,7 +627,6 @@
                 return `
                 <div class="tool-card bg-white rounded-xl border ${isOpen ? 'border-blue-300 shadow-md ring-1 ring-blue-50' : 'border-slate-200 hover:border-slate-300'} overflow-hidden">
                     
-                    <!-- 卡片標題區 (可點擊展開/收合) -->
                     <div onclick="toggleCard(${item.id})" class="p-4 md:p-5 cursor-pointer flex gap-4 items-start select-none">
                         <div class="mt-1 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-90 text-blue-500' : ''}">
                             <i data-lucide="chevron-right" class="w-5 h-5"></i>
@@ -658,12 +646,10 @@
                         </button>
                     </div>
 
-                    <!-- 手風琴展開內容區 -->
                     <div class="accordion-content ${isOpen ? 'open' : ''}">
                         <div class="accordion-inner bg-slate-50 border-t border-slate-100">
                             <div class="p-4 md:p-6 grid md:grid-cols-2 gap-6">
                                 
-                                <!-- 左側：Prompt 原文 -->
                                 <div>
                                     <div class="flex items-center gap-2 mb-3">
                                         <i data-lucide="terminal-square" class="w-4 h-4 text-blue-600"></i>
@@ -677,7 +663,6 @@ ${item.content}
                                     </button>
                                 </div>
 
-                                <!-- 右側：實戰指引 (Details) -->
                                 <div>
                                     <div class="flex items-center gap-2 mb-3">
                                         <i data-lucide="info" class="w-4 h-4 text-amber-500"></i>
@@ -698,9 +683,7 @@ ${item.content}
             lucide.createIcons();
         }
 
-        // --- 互動邏輯 ---
         function toggleCard(id) {
-            // 點擊已展開的，則關閉；點擊未展開的，則展開該項並關閉其他
             openCardId = openCardId === id ? null : id;
             renderList();
         }
@@ -736,3 +719,4 @@ ${item.content}
     </script>
 </body>
 </html>
+```eof
