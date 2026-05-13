@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 實戰指令庫 - 列表導覽版</title>
+    <meta name="description" content="整合 pro 版進階指令的 AI 實戰指令庫">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons CDN -->
@@ -102,10 +103,35 @@
         
         <!-- 當前分類標題列 -->
         <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 p-4 sticky top-0 z-10">
-            <h2 id="currentCategoryTitle" class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                全部 <span id="currentCategoryCount" class="text-sm font-normal text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full"></span>
-            </h2>
+            <div class="flex items-center justify-between gap-3 flex-wrap">
+                <h2 id="currentCategoryTitle" class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    全部 <span id="currentCategoryCount" class="text-sm font-normal text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full"></span>
+                </h2>
+                <button id="newFilterBtn" onclick="toggleNewOnly()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-white border-slate-200 text-slate-500 hover:border-rose-300 hover:text-rose-600">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                    <span>本次更新 (<span id="newCount">0</span>)</span>
+                </button>
+            </div>
         </header>
+
+        <!-- 本次更新橫幅 -->
+        <div id="updateBanner" class="bg-gradient-to-r from-rose-50 via-amber-50 to-blue-50 border-b border-slate-200 px-4 md:px-8 py-3">
+            <div class="max-w-4xl mx-auto flex items-start gap-3">
+                <div class="shrink-0 mt-0.5 bg-white border border-rose-200 rounded-md p-1.5 text-rose-500">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-0.5 flex-wrap">
+                        <span class="text-[10px] font-bold tracking-wider bg-rose-500 text-white px-1.5 py-0.5 rounded">本次更新</span>
+                        <span class="text-sm font-bold text-slate-800">已整合 Pro 版進階指令</span>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">新增「<strong>市場研究</strong>」分類、10 款萬用市場調查模版、5 大研究任務指令，以及視覺化資訊圖表、CEO 版視覺筆記、旅遊行銷生圖等共 <strong id="newCountBanner">8</strong> 條指令。點右上「本次更新」可只顯示新內容。</p>
+                </div>
+                <button onclick="document.getElementById('updateBanner').classList.add('hidden')" class="shrink-0 text-slate-400 hover:text-slate-700 p-1" title="關閉">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
 
         <!-- 列表容器 -->
         <div class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8" id="mainScrollArea">
@@ -526,14 +552,158 @@
                         <li><strong>Mockup：</strong> 要求 Logo 在曲面上有正確變形。</li>
                     </ul>
                 `
+            }, 
+            // === 本次更新：整合 Pro 版進階指令 ===
+            {
+                id: 100,
+                title: "內容擴散專案追蹤表",
+                category: "品牌經理",
+                description: "建立內容擴散的專案追蹤試算表架構，包含發佈管道、負責人、URL 與優先順序。",
+                content: "請建立一份內容擴散的專案追蹤表，並包含發佈管道、負責人、URL 與優先順序欄位（低、中、高）。",
+                tags: ["專案追蹤", "內容擴散", "試算表"],
+                isNew: true,
+                details: `
+                    <h4>English Prompt:</h4>
+                    <code>Create a project tracker for content amplification and include columns for channel, owner, URL, and priority level (low, medium, high).</code>
+                    <h4>使用情境：</h4>
+                    <p>新人事公告、產品上市或行銷活動後，需要把同一份素材推到 FB、IG、LinkedIn、電子報等多個管道時，用這份追蹤表確保不漏發、有人負責、可量化優先序。</p>
+                    <h4>進階玩法：</h4>
+                    <p>可附加結果欄位（點擊數、轉換數）讓 AI 同時設計「反測模板」。</p>
+                `
+            },
+            {
+                id: 101,
+                title: "10 款市場調查報告萬用模版",
+                category: "市場研究",
+                description: "從產品、產業、服務、品牌到競爭對手等 10 種角度切入，一鍵套用的市場調查模版。",
+                content: "請從下列 10 條中選一條套用，把方括號內參數換成你的場景：\n\n1. 請為我產生一份關於 [產品名稱] 在 [地區名稱] 市場的研究報告，包括市場規模、競爭態勢、消費者需求和趨勢分析。\n\n2. 以 [產業名稱] 為例，為我撰寫一份市場調查報告，涵蓋市場現狀、成長潛力、主要參與者和面臨的挑戰。\n\n3. 為我創作一份有關 [服務名稱] 市場的研究報告，分析其目標客戶群、市場份額分佈、價格敏感度和未來發展預測。\n\n4. 請提供一份針對 [品牌名稱] 在 [特定市場] 的市場調查報告，著重探討品牌知名度、消費者忠誠度和市場推廣策略的效果。\n\n5. 基於最新數據，為我產生一份關於 [新興市場領域] 的市場調查報告，包含市場機會、進入障礙、技術創新趨勢。\n\n6. 撰寫一份關於 [傳統產業] 在數位轉型背景下的市場調查報告，考察市場反應、轉型成功案例和面臨的技術障礙。\n\n7. 為我準備一份關於 [特定消費群體（如年輕人、老年人、中高收入階層等）] 對 [產品或服務類別] 需求的市場調查報告。\n\n8. 以 [時間段（如過去 5 年、未來 3 年）] 為範圍，產生一份 [市場名稱] 的市場調查報告，涵蓋市場動態、政策影響和產業發展趨勢。\n\n9. 請針對 [市場區隔領域（如高階市場、低階市場、農村市場等）] 的 [產品或服務]，創作一份市場調查報告，包括市場特性、競爭優勢和發展建議。\n\n10. 為我產生一份關於 [競爭對手名稱] 在 [市場範圍] 的市場調查報告，分析其產品策略、行銷策略和市場表現。",
+                tags: ["市場調查", "10模版", "研究報告"],
+                isNew: true,
+                details: `
+                    <h4>使用方式：</h4>
+                    <p>從 10 條模版中挑一條最符合需求的，把方括號內的變數換成你的場景再丟給 AI。建議搭配最新資料來源（如 Statista、產業報告連結）一起貼上，效果更好。</p>
+                    <h4>適用對象：</h4>
+                    <p>策略幕僚、業務開發、新事業評估、產品上市前研究。</p>
+                    <h4>進階搭配：</h4>
+                    <p>先用 1～3 條路彑不同角度的初稿→ 再請 AI 交叉驗證不同報告間的冲突 → 收斂成一份「交集洞察」。</p>
+                `
+            },
+            {
+                id: 102,
+                title: "市場研究五大任務指令",
+                category: "市場研究",
+                description: "資料收集、趨勢預測、競爭分析、消費者行為、策略生成——五種研究任務的指令公式。",
+                content: "▾ 資料收集與分析\n請收集 2023 年全球[市場類別]的銷售數據，並分析市場佔有率變化。\n基於使用者評估與銷售數據，分析最受歡迎的[產品類別]特色。\n\n▾ 趨勢預測\n預測 2024 年[市場類別]的成長趨勢，並指出潛在的市場機會。\n分析過去五年內的市場數據，預測未來三年內[產業]的成長率。\n\n▾ 競爭分析\n對比三個主要競爭對手的產品線、定價策略和市場表現，並產生分析報告。\n評估在當前市場環境下，我們的[產品]與競爭對手相比的優勢和劣勢。\n\n▾ 消費者行為\n分析消費者對[產品類別]的態度和購買行為，總結關鍵洞察。\n基於社群媒體數據，描繪目標消費者的畫像，並分析他們的偏好。\n\n▾ 報告與策略生成\n根據收集的數據和分析結果，撰寫一份詳細的市場調查報告，包括目錄、圖表和結論。\n產生一份市場進入策略報告，針對新推出的[產品]，包括市場定位、推廣計劃和預期目標。",
+                tags: ["研究任務", "趨勢預測", "競爭分析"],
+                isNew: true,
+                details: `
+                    <h4>五大任務分類：</h4>
+                    <ul>
+                        <li><strong>資料收集與分析：</strong>抓銷售/評論/搜尋量等一手資料。</li>
+                        <li><strong>趨勢預測：</strong>基於歷史數據推估未來幾年走向。</li>
+                        <li><strong>競爭分析：</strong>橫向比較 3+ 對手或自我 SWOT。</li>
+                        <li><strong>消費者行為：</strong>畫使用者畫像、解構購買決策。</li>
+                        <li><strong>策略生成：</strong>把上述洞察轉成一份可執行的進入策略。</li>
+                    </ul>
+                    <h4>建議流程：</h4>
+                    <p>先跑「資料收集」拿到原始數字 → 接「趨勢預測」與「競爭分析」拿到洞察 → 最後執行「策略生成」收斂成決策。</p>
+                `
+            },
+            {
+                id: 103,
+                title: "活動視覺風格發想 Prompt",
+                category: "內容行銷",
+                description: "為行銷活動構思具啓發性的視覺方向：指定顏色、自然元素與寫實風格。",
+                content: "請協助我為一項 [產品類型] 的行銷活動構思具啓發性的圖片。圖片需使用 [指定顏色]，並結合 [自然元素，例如雲朵]，整體風格為 [寫實風]。",
+                tags: ["視覺風格", "活動規劃", "Moodboard"],
+                isNew: true,
+                details: `
+                    <h4>English Prompt:</h4>
+                    <code>Help me create inspirational images for a marketing campaign for [type of product]. Images should use [colors] and [natural elements, such as clouds]. Use a [photorealistic] style.</code>
+                    <h4>使用時機：</h4>
+                    <p>提案前期不需要立刻產出最終素材，先讓 AI 生 3-5 張 moodboard 收斂方向，再交給設計師延伸。</p>
+                `
+            },
+            {
+                id: 104,
+                title: "旅遊產業部落格選題",
+                category: "內容行銷",
+                description: "為旅遊/觀光產業讀者發想具獨特觀點與時效性的部落格選題。",
+                content: "請提出適合熱愛旅遊與觀光產業讀者的部落格文章主題建議。\n重點：主題需具獨特性與時效關聯性（結合近期趨勢／挑戰／創新）。\n每個主題需包含：\n- 目標受眾\n- 內容大綱（條列重點）\n- 行動号召",
+                tags: ["旅遊", "部落格", "選題"],
+                isNew: true,
+                details: `
+                    <h4>English Prompt:</h4>
+                    <code>Suggest blog post topics that would be interesting for people passionate about travel and the tourism industry. Focus on: unique fresh angles, relevant trends/challenges/innovations. Include: Target audience, Content outline, Call to action.</code>
+                    <h4>延伸：</h4>
+                    <p>可以把「旅遊」替換成你自己的產業關鍵字，骨架完全通用（美妝、寵物、健身、家電都行）。</p>
+                `
+            },
+            {
+                id: 105,
+                title: "旅遊行銷情境生圖",
+                category: "生圖",
+                description: "日出、飛機、雲海、山川——適合旅遊產業活動主視覺的標準寫實風 prompt。",
+                content: "請生成一張圖片：畫面為日出時分，一架飛機飛行於雲海之上，下方可見山脈與河流。此圖片將用於推廣我旅遊公司的行銷活動。",
+                tags: ["旅遊", "活動主視覺", "寫實風"],
+                isNew: true,
+                details: `
+                    <h4>English Prompt:</h4>
+                    <code>Create an image of a plane flying above the clouds over mountains and rivers during sunrise that I can use in the marketing campaign to promote my travel company.</code>
+                    <h4>調整方向：</h4>
+                    <p>把「日出時分」換成 dusk / golden hour、把「飛機」換成郵輪/列車/熱氣球，即可生出整套不同交通主題的活動視覺。</p>
+                `
+            },
+            {
+                id: 106,
+                title: "視覺筆記 - CEO/董事會高階商務版",
+                category: "生圖",
+                description: "視覺筆記的高階商務變體：深淺藍配色、大量留白、16:9 橫式，適合對董事會簡報。",
+                content: "為上述筆記製作一張手繪的『視覺筆記』(sketchnote) 圖像摘要。背景使用潔白的紙張（無格線）。風格為 corporate professional，主色為淺藍色配白色、深藍色點綴，大量留白，進行簡單的陰影處理與點綴。整體感覺穩重、專業、適合 CEO 及 董事會觀看。文字必須清晰可讀。將主標題放置於頂部，文字應清晰獨特，採用類似於 Apple 的設計風格，易於閱讀且條理分明，呈現出專業、財經的氛圍。版面配置為 16:9 橫式簡報大小。文字採用台灣繁體中文。",
+                tags: ["視覺筆記", "高階商務", "16:9"],
+                isNew: true,
+                details: `
+                    <h4>與標準版的差異：</h4>
+                    <ul>
+                        <li>不用彩色馬克筆，改為淺藍 + 深藍主色，整體更穩重</li>
+                        <li>版面從 A4 直式改成 16:9 橫式，可直接放進簡報</li>
+                        <li>視覺氛圍從「腦力激盪會議」改為「Apple 風財經發表」</li>
+                    </ul>
+                    <h4>使用前置：</h4>
+                    <p>同樣先讓 AI 做「短句化摘要」再生圖，效果穩定許多。</p>
+                `
+            },
+            {
+                id: 107,
+                title: "視覺化資訊圖表（16:9）",
+                category: "生圖",
+                description: "將數據一鍵生成簡潔現代的視覺化資訊圖表，可指定圖表類型與品牌配色。",
+                content: "請幫我將以下數據，製作成『視覺化資訊圖表』（比例 16:9）。\n數據內容：[填入數據]\n圖表類型：[長條圖／圓餅圖／折線圖／混合式]\n配色：[品牌色或指定色系]\n加入數據標籤與說明文字，繁體中文標註。\n風格：簡潔現代，適合商業提案。",
+                tags: ["資訊圖表", "數據視覺化", "簡報"],
+                isNew: true,
+                details: `
+                    <h4>使用情境：</h4>
+                    <p>季度報告、提案簡報、新聞稿配圖。比手動拉 PPT 圖表快 10 倍，但結果需要再次校對數值——AI 生成的圖表本質是「貼近真實」的視覺，不是精準計算過的資料圖。</p>
+                    <h4>建議流程：</h4>
+                    <ol>
+                        <li>先請 AI 用此 prompt 生 1-2 張概念圖。</li>
+                        <li>挑選最佳構圖。</li>
+                        <li>在 Figma/PPT 中按概念圖重畫，確保數字 100% 正確。</li>
+                    </ol>
+                `
             }
         ];
 
         let currentCategory = '全部';
         let currentSearch = '';
-        let openCardId = null; 
+        let openCardId = null;
+        let showNewOnly = false;
 
         function init() {
+            const newItems = INITIAL_DATA.filter(i => i.isNew);
+            document.getElementById('newCount').innerText = newItems.length;
+            document.getElementById('newCountBanner').innerText = newItems.length;
+
             renderSidebar();
             renderList();
             lucide.createIcons();
@@ -579,6 +749,21 @@
             }).join('');
         }
 
+        function toggleNewOnly() {
+            showNewOnly = !showNewOnly;
+            const btn = document.getElementById('newFilterBtn');
+            if (showNewOnly) {
+                btn.classList.remove('bg-white', 'border-slate-200', 'text-slate-500');
+                btn.classList.add('bg-rose-500', 'border-rose-500', 'text-white');
+            } else {
+                btn.classList.add('bg-white', 'border-slate-200', 'text-slate-500');
+                btn.classList.remove('bg-rose-500', 'border-rose-500', 'text-white');
+            }
+            openCardId = null;
+            renderList();
+            document.getElementById('mainScrollArea').scrollTop = 0;
+        }
+
         function filterCategory(cat) {
             currentCategory = cat;
             openCardId = null; 
@@ -604,11 +789,15 @@
                                      item.description.toLowerCase().includes(currentSearch) ||
                                      item.content.toLowerCase().includes(currentSearch);
                 const matchesCat = currentCategory === '全部' || item.category === currentCategory;
-                return matchesSearch && matchesCat;
+                const matchesNew = !showNewOnly || item.isNew;
+                return matchesSearch && matchesCat && matchesNew;
             });
 
+            const titleLabel = showNewOnly
+                ? `本次更新${currentCategory !== '全部' ? ' · ' + currentCategory : ''}`
+                : currentCategory;
             document.getElementById('currentCategoryTitle').innerHTML = `
-                ${currentCategory} <span class="text-sm font-normal text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">${filtered.length}</span>
+                ${titleLabel} <span class="text-sm font-normal text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">${filtered.length}</span>
             `;
 
             if (filtered.length === 0) { 
@@ -625,14 +814,15 @@
                 const isOpen = openCardId === item.id;
                 
                 return `
-                <div class="tool-card bg-white rounded-xl border ${isOpen ? 'border-blue-300 shadow-md ring-1 ring-blue-50' : 'border-slate-200 hover:border-slate-300'} overflow-hidden">
+                <div class="tool-card bg-white rounded-xl border ${isOpen ? 'border-blue-300 shadow-md ring-1 ring-blue-50' : item.isNew ? 'border-rose-200 hover:border-rose-300' : 'border-slate-200 hover:border-slate-300'} overflow-hidden relative">
+                    ${item.isNew ? `<div class="absolute top-0 right-0 bg-rose-500 text-white text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-bl-md rounded-tr-xl flex items-center gap-1"><i data-lucide="sparkles" class="w-2.5 h-2.5"></i> NEW</div>` : ''}
                     
                     <div onclick="toggleCard(${item.id})" class="p-4 md:p-5 cursor-pointer flex gap-4 items-start select-none">
                         <div class="mt-1 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-90 text-blue-500' : ''}">
                             <i data-lucide="chevron-right" class="w-5 h-5"></i>
                         </div>
                         <div class="flex-1">
-                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                            <div class="flex flex-wrap items-center gap-2 mb-1 ${item.isNew ? 'pr-12' : ''}">
                                 <h3 class="text-base font-bold text-slate-800">${item.title}</h3>
                                 ${currentCategory === '全部' ? `<span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">${item.category}</span>` : ''}
                             </div>
